@@ -1,0 +1,136 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit User - IAM Dashboard</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+
+        header {
+            background: #172554;
+            color: white;
+            padding: 24px 32px;
+        }
+
+        main {
+            max-width: 650px;
+            margin: 40px auto;
+            padding: 0 24px;
+        }
+
+        .card {
+            background: white;
+            padding: 28px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px #0000000a;
+        }
+
+        label {
+            display: block;
+            margin-top: 18px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        button, .back-link {
+            display: inline-block;
+            margin-top: 24px;
+            padding: 12px 18px;
+            border: none;
+            border-radius: 6px;
+            background: #1d4ed8;
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .back-link {
+            margin-left: 8px;
+            background: #64748b;
+        }
+
+        button:hover {
+            background: #1e40af;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>IAM Access Management</h1>
+        <p>Edit User Details</p>
+    </header>
+
+    <main>
+        <section class="card">
+            <h2>Edit User</h2>
+            <p>Update the user's information below.</p>
+
+            <form method="POST">
+                <label for="name">Full Name</label>
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value="{{ user['name'] }}"
+                    required
+                >
+
+                <label for="email">Email Address</label>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value="{{ user['email'] }}"
+                    required
+                >
+
+                <label for="role">Role</label>
+                <select id="role" name="role" required>
+                    <option value="Administrator"
+                        {% if user['role'] == 'Administrator' %}selected{% endif %}>
+                        Administrator
+                    </option>
+                    <option value="Manager"
+                        {% if user['role'] == 'Manager' %}selected{% endif %}>
+                        Manager
+                    </option>
+                    <option value="Employee"
+                        {% if user['role'] == 'Employee' %}selected{% endif %}>
+                        Employee
+                    </option>
+                    <option value="Auditor"
+                        {% if user['role'] == 'Auditor' %}selected{% endif %}>
+                        Auditor
+                    </option>
+                </select>
+
+                <button type="submit">Save Changes</button>
+                <a class="back-link" href="{{ url_for('dashboard') }}">Cancel</a>
+            </form>
+        </section>
+    </main>
+</body>
+</html>

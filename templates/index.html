@@ -1,0 +1,348 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IAM Access Management Dashboard</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+
+        header {
+            background: #172554;
+            color: white;
+            padding: 24px 32px;
+        }
+
+        header h1 {
+            margin: 0 0 8px;
+        }
+
+        header p {
+            margin: 0;
+            color: #cbd5e1;
+        }
+
+        main {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 0 24px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .card {
+            background: white;
+            padding: 22px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px #0000000a;
+        }
+
+        .card h2 {
+            margin-top: 0;
+            font-size: 15px;
+            color: #64748b;
+        }
+
+        .number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #172554;
+        }
+
+        .section {
+            margin-top: 26px;
+        }
+
+        .section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: #1d4ed8;
+            color: white;
+            border: none;
+            padding: 11px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1e40af;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 11px;
+            margin-top: 6px;
+            margin-bottom: 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .message {
+            padding: 12px 16px;
+            margin-top: 18px;
+            border-radius: 6px;
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 18px;
+        }
+
+        th, td {
+            padding: 14px 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .status {
+            background: #dcfce7;
+            color: #166534;
+            padding: 5px 9px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .inactive {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        footer {
+            text-align: center;
+            padding: 28px;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        @media (max-width: 700px) {
+            .stats, .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>IAM Access Management</h1>
+        <p>Identity and Access Management Dashboard</p>
+    </header>
+
+    <main>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="message">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <section class="stats">
+            <div class="card">
+                <h2>Total Users</h2>
+                <div class="number">{{ total_users }}</div>
+            </div>
+
+            <div class="card">
+                <h2>Active Accounts</h2>
+                <div class="number">{{ active_users }}</div>
+            </div>
+
+            <div class="card">
+                <h2>Inactive Accounts</h2>
+                <div class="number">{{ inactive_users }}</div>
+            </div>
+        </section>
+
+        <section class="section card">
+            <h2>Welcome to your IAM Dashboard</h2>
+            <p>
+                Review employee accounts and their assigned
+                roles in this identity management demo.
+            </p>
+        </section>
+
+        <section class="section card">
+            <div class="section-title">
+                <h2>User Management</h2>
+            </div>
+
+            <h3>Add a New User</h3>
+
+            <form action="{{ url_for('add_user') }}" method="POST">
+                <div class="form-grid">
+                    <div>
+                        <label for="name">Full Name</label>
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            placeholder="Enter full name"
+                            required
+                        >
+                    </div>
+
+                    <div>
+                        <label for="email">Email Address</label>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="name@example.com"
+                            required
+                        >
+                    </div>
+
+                    <div>
+                        <label for="role">Role</label>
+                        <select id="role" name="role" required>
+                            <option value="">Select a role</option>
+                            <option value="Administrator">Administrator</option>
+                            <option value="Manager">Manager</option>
+                            <option value="Employee">Employee</option>
+                            <option value="Auditor">Auditor</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit">+ Add User</button>
+            </form>
+
+            <h3>User Accounts</h3>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Account Status</th>
+        <th>Actions</th>
+    </tr>
+</thead>
+
+                    <tbody>
+                        {% for user in users %}
+                            <tr>
+                                <td>{{ user["name"] }}</td>
+                                <td>{{ user["email"] }}</td>
+                                <td>{{ user["role"] }}</td>
+                                
+<td>
+    {% if user["active"] %}
+        <span class="status">Active</span>
+    {% else %}
+        <span class="status inactive">Inactive</span>
+    {% endif %}
+</td>
+
+<td>
+    <a href="{{ url_for('edit_user', user_id=user['id']) }}"
+       style="display: inline-block; text-decoration: none; background: #0f766e; color: white; padding: 8px 12px; border-radius: 6px; margin-bottom: 6px;">
+        Edit
+    </a>
+
+    {% if user["active"] %}
+        <form action="{{ url_for('deactivate_user', user_id=user['id']) }}"
+              method="POST"
+              onsubmit="return confirm('Are you sure you want to deactivate this user?');"
+              style="display: inline-block;">
+            <button type="submit">Deactivate</button>
+        </form>
+    {% else %}
+        <span>Inactive account</span>
+    {% endif %}
+</td>
+
+
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="5">No users found.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="section">
+    <h2>Audit Log</h2>
+    <p>Recent user management activity</p>
+
+    {% if logs %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Action</th>
+                    <th>Details</th>
+                    <th>Date &amp; Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                    <tr>
+                        <td>{{ log['action'] }}</td>
+                        <td>{{ log['details'] }}</td>
+                        <td>{{ log['timestamp'] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No audit activity recorded yet.</p>
+    {% endif %}
+</div>
+        </section>
+    </main>
+
+    <footer>
+        Student Capstone Project | Fictional demonstration data
+    </footer>
+</body>
+</html>
+
