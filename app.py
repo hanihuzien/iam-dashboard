@@ -206,7 +206,8 @@ def edit_user(user_id):
     connection.close()
     return render_template("edit_user.html", user=user)
 
+initialize_database()
+
 if __name__ == "__main__":
-    initialize_database()
     app.run(debug=True)
 
